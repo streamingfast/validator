@@ -1,9 +1,12 @@
-## EOS Canada Validator Library
+# dfuse Validator Library
+
+[![reference](https://img.shields.io/badge/godoc-reference-5272B4.svg?style=flat-square)](https://pkg.go.dev/github.com/dfuse-io/validator)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 This repository contains all common stuff around validation handling across our
 various services
 
-### Philosophy
+## Philosophy
 
 We started using [govalidator](https://github.com/thedevsaddam/govalidator) for our validation
 needs.
@@ -32,7 +35,7 @@ a separator `sep` and with a maximum count of `maxCount`.
 eosNamesListRule := validator.EOSNamesRulesFactory("|", 10)
 ```
 
-### Usage
+## Usage
 
 To efficiently used pre-defined rules inside validator as a string, you must register them through
 a central location (`func init()` in a `validators.go` in the package is probably the most common
@@ -55,7 +58,7 @@ errors := validator.ValidateQueryParams(r, govalidator.MapData{
 })
 ```
 
-#### Validate Query Parameters
+### Validate Query Parameters
 
 Simply pass your request and receives back `url.Values` object which is a simple
 `map[string][]string` where the key is the name of the offending field and the
@@ -68,7 +71,7 @@ errors := validator.ValidateQueryParams(r, validator.Rules{
 })
 ```
 
-#### Validate JSON Body Payload
+### Validate JSON Body Payload
 
 Similar to `validator.ValidateQueryParams` but you pass and extra parameters
 which will be the object into which the JSON payload will be deserialized in.
@@ -101,7 +104,7 @@ an errors map containing a single entry whose key will be named `_error` and
 the values will be a single element array containing the message why
 the JSON deserialization failed.
 
-#### Validate Struct
+### Validate Struct
 
 Can be used to validate any kind of structure. The field names are determined
 via the `json` tag if present of the field name (case sensitive) if the `json`
@@ -129,7 +132,7 @@ errors := validator.ValidateStruct(data, validator.Rules{
 })
 ```
 
-#### Reference
+### Reference
 
 For now, not much reference documentation exists. You are invited to read the
 following files to get a clearer understanding of what you can do.
@@ -142,3 +145,20 @@ most of the usage that can be made out of this library:
 
 - [api_test.go](./api_test.go)
 - [rules_test.go](./rules_test.go)
+
+
+## Contributing
+
+**Issues and PR in this repo related strictly to the validator library.**
+
+Report any protocol-specific issues in their
+[respective repositories](https://github.com/dfuse-io/dfuse#protocols)
+
+**Please first refer to the general
+[dfuse contribution guide](https://github.com/dfuse-io/dfuse/blob/master/CONTRIBUTING.md)**,
+if you wish to contribute to this code base.
+
+
+## License
+
+[Apache 2.0](LICENSE)
