@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/eoscanada/eos-go"
-	"github.com/dfuse-io/opaque"
+	"github.com/streamingfast/opaque"
 )
 
 type Rule func(field string, rule string, message string, value interface{}) error
