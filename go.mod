@@ -1,4 +1,4 @@
-module github.com/dfuse-io/validator
+module github.com/streamingfast/validator
 
 go 1.14
 
