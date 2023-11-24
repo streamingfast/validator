@@ -6,21 +6,18 @@ import (
 	"strings"
 	"testing"
 
-	eos "github.com/eoscanada/eos-go"
-	"github.com/stretchr/testify/require"
-
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"github.com/thedevsaddam/govalidator"
 )
 
 func init() {
-	govalidator.AddCustomRule("eos.blockNum", EOSBlockNumRule)
-	govalidator.AddCustomRule("eos.name", EOSNameRule)
+	govalidator.AddCustomRule("date_time", DateTimeRuleFactory("2006-01-02"))
 }
 
 func TestValidateQueryParams(t *testing.T) {
 	singleRules := map[string][]string{
-		"block_num": []string{"eos.blockNum"},
+		"block_num": {"date_time"},
 	}
 
 	tests := []struct {
@@ -29,9 +26,9 @@ func TestValidateQueryParams(t *testing.T) {
 		rules  Rules
 		errors url.Values
 	}{
-		{"block_num valid", "block_num=1", singleRules, url.Values{}},
-		{"block_num not valid", "block_num=a", singleRules, url.Values{
-			"block_num": []string{"The block_num field must be a valid EOS block num"},
+		{"block_num valid", "block_num=2017-10-30", singleRules, url.Values{}},
+		{"block_num not valid", "block_num=2017", singleRules, url.Values{
+			"block_num": []string{"The block_num field is not a valid date time string according to layout 2006-01-02"},
 		}},
 	}
 
@@ -48,11 +45,11 @@ func TestValidateQueryParams(t *testing.T) {
 
 func TestValidateStruct(t *testing.T) {
 	singleRules := map[string][]string{
-		"account": []string{"eos.name"},
+		"account": {"date_time"},
 	}
 
 	type payload struct {
-		Account eos.Name `json:"account"`
+		Account string `json:"account"`
 	}
 
 	tests := []struct {
@@ -61,9 +58,9 @@ func TestValidateStruct(t *testing.T) {
 		expectedData payload
 		errors       url.Values
 	}{
-		{"account valid", singleRules, payload{Account: "eos"}, url.Values{}},
+		{"account valid", singleRules, payload{Account: "2017-02-10"}, url.Values{}},
 		{"account not valid", singleRules, payload{Account: "6"}, url.Values{
-			"account": []string{"The account field must be a valid EOS name"},
+			"account": []string{"The account field is not a valid date time string according to layout 2006-01-02"},
 		}},
 	}
 
@@ -77,11 +74,11 @@ func TestValidateStruct(t *testing.T) {
 
 func TestValidateStruct_CustomTagIdentifier(t *testing.T) {
 	singleRules := map[string][]string{
-		"account": []string{"eos.name"},
+		"account": {"date_time"},
 	}
 
 	type payload struct {
-		Account eos.Name `schema:"account"`
+		Account string `schema:"account"`
 	}
 
 	tests := []struct {
@@ -90,9 +87,9 @@ func TestValidateStruct_CustomTagIdentifier(t *testing.T) {
 		expectedData payload
 		errors       url.Values
 	}{
-		{"account valid", singleRules, payload{Account: "eos"}, url.Values{}},
+		{"account valid", singleRules, payload{Account: "2017-02-10"}, url.Values{}},
 		{"account not valid", singleRules, payload{Account: "6"}, url.Values{
-			"account": []string{"The account field must be a valid EOS name"},
+			"account": []string{"The account field is not a valid date time string according to layout 2006-01-02"},
 		}},
 	}
 
@@ -106,11 +103,11 @@ func TestValidateStruct_CustomTagIdentifier(t *testing.T) {
 
 func TestValidateJSONBody(t *testing.T) {
 	singleRules := map[string][]string{
-		"account": []string{"eos.name"},
+		"account": {"date_time"},
 	}
 
 	type payload struct {
-		Account eos.Name `json:"account"`
+		Account string `json:"account"`
 	}
 
 	tests := []struct {
@@ -120,9 +117,9 @@ func TestValidateJSONBody(t *testing.T) {
 		expectedData payload
 		errors       url.Values
 	}{
-		{"account valid", `{"account":"eos"}`, singleRules, payload{Account: "eos"}, url.Values{}},
+		{"account valid", `{"account":"2017-02-10"}`, singleRules, payload{Account: "2017-02-10"}, url.Values{}},
 		{"account not valid", `{"account":"6"}`, singleRules, payload{Account: "6"}, url.Values{
-			"account": []string{"The account field must be a valid EOS name"},
+			"account": []string{"The account field is not a valid date time string according to layout 2006-01-02"},
 		}},
 		{"account invalid JSON", `{"account":"6"`, singleRules, payload{}, url.Values{
 			"_error": []string{"unexpected EOF"},

@@ -43,9 +43,7 @@ place).
 
 ```
 func init() {
-    govalidator.AddCustomRule("eos.blockNum", validator.EOSBlockNumRule)
-    govalidator.AddCustomRule("eos.name", validator.EOSNameRule)
-    govalidator.AddCustomRule("eos.accountsList", validator.EOSNamesListRuleFactory("|", 10))
+    govalidator.AddCustomRule("<custom_rule_name>", validator.ValidatorName)
 }
 ```
 
@@ -53,8 +51,7 @@ You can then pass them as string in your rules set when validating query paramet
 
 ```
 errors := validator.ValidateQueryParams(r, govalidator.MapData{
-    "account":   []string{"required", "eos.name"},
-    "block_num": []string{"eos.blockNum"},
+    "account":   []string{"required", "<custom_rule_name>"},
 })
 ```
 
@@ -66,8 +63,7 @@ value is an array of all the error messages for this field.
 
 ```
 errors := validator.ValidateQueryParams(r, validator.Rules{
-    "account":   []string{"required", "eos.name"},
-    "block_num": []string{"eos.blockNum"},
+    "account":   []string{"required", "<custom_rule_name>"},
 })
 ```
 
@@ -89,12 +85,12 @@ value is an array of all the error messages for this field.
 
 ```
 type Request struct {
-    Account eos.Name `json:"account"`
+    Account string `json:"account"`
 }
 
 request := Request{}
 errors := validator.ValidateJSONBody(r, &request, validator.Rules{
-    "account":   []string{"required", "eos.name"},
+    "account":   []string{"required", "<custom_rule_name>"},
 })
 ```
 
@@ -118,17 +114,14 @@ value is an array of all the error messages for this field.
 ```
 type test struct {
     accountName string `json:account`
-    blockNum    uint32 `json:block_num`
 }
 
 data := &test{
-    accountName: "eosio",
-    blockNum: 0,
+    accountName: "test",
 }
 
 errors := validator.ValidateStruct(data, validator.Rules{
-    "account":   []string{"required", "eos.name"},
-    "block_num": []string{"eos.blockNum"},
+    "account":   []string{"required", "<custom_rule_name>"},
 })
 ```
 
